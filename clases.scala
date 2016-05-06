@@ -1,4 +1,4 @@
-\case class Enemy(type: String, str: Int = 4, spd: Int = 4, ,hp: Int = 20, armor: Int = 0)
+case class Enemy(type: String, str: Int = 4, spd: Int = 4, ,hp: Int = 20, armor: Int = 0)
 case class Weapon(type: String, dmg: Int, def: Int, wpSpd: Double = 1.0, acc: Double = 1.0)
 case class Armor(type: String, def: Int, weight: Double = 0.0)
 
