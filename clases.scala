@@ -1,14 +1,16 @@
-\case class Enemy(type: String, str: Int = 4, spd: Int = 4, ,hp: Int = 20, armor: Int = 0)
+case class Enemy(type: String, str: Int = 4, spd: Int = 4, ,hp: Int = 20, armor: Int = 0)
 case class Weapon(type: String, dmg: Int, def: Int, wpSpd: Double = 1.0, acc: Double = 1.0)
 case class Armor(type: String, def: Int, weight: Double = 0.0)
 
 val goblin = Enemy("Goblin", 3, 6, 10, 0)
+val armoredGob = Enemy("Armored Goblin", 6, 6, 20, 6)
+val gobKing = Enemy("Goblin King", 10, 8, 40, 6)
 val rat = Enemy("Rat", 2, 8, 5, 0)
 val slime = Enemy("Slime", 1, 2, 40, 0)
 val skeleton = Enemy("Skeleton", 4, 4, 15, 1)
 val snake = Enemy("Snake", 6, 6, 10, 0)
 val spider = Enemy("Spider", 5, 8, 15, 1)
-val skeletonGuard = Enemy("SkeletonGuard", 6, 4, 30, 4)
+val skeletonGuard = Enemy("Skeleton Guard", 6, 4, 30, 4)
 
 val dagger = Weapon("Dagger", 2, 0, 1.5, 1.2)
 val club = Weapon("Club", 4, 0, 0.8, 0.8)
