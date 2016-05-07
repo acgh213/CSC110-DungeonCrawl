@@ -1,0 +1,21 @@
+import fang2.sprites._
+import fang2.core.Game
+import fang2.core.Sound
+import java.awt.Color
+import sprites._
+
+class Castle extends Game {
+//var wall(w:Int): Array[ImageSprite] = (Array.tabulate(5)(w => new ImageSprite("StoneWall.png")))
+var wall = new ImageSprite("StoneWall.png")
+	override def setup{
+	wall.setScale(0.01)
+	addSprite(wall)
+}
+	override def advance{
+
+def buildWall {
+	wall.setLocation(0,1)
+}
+}
+}
+//val room1 (n:int) (l:int) (w:int) = for(i <- 0 until n) yield new wall(l,w)
