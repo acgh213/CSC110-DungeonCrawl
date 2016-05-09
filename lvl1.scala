@@ -19,8 +19,8 @@ class lvl1 extends Game(900,800) {
  val hall3r: List[ImageSprite] = List.tabulate(15)(h3r => new ImageSprite("WoodFloor.png"))
  val hall3l2: List[ImageSprite] = List.tabulate(15)(h3l2 => new ImageSprite("WoodFloor.png"))
  val hall3r2: List[ImageSprite] = List.tabulate(15)(h3r2 => new ImageSprite("WoodFloor.png"))
- val hall3t: List[ImageSprite] = List.tabulate(8)(h3t => new ImageSprite("WoodFloor.png"))
- val hall3b: List[ImageSprite] = List.tabulate(8)(h3b => new ImageSprite("WoodFloor.png"))
+ val hall3t: List[ImageSprite] = List.tabulate(6)(h3t => new ImageSprite("WoodFloor.png"))
+ val hall3b: List[ImageSprite] = List.tabulate(6)(h3b => new ImageSprite("WoodFloor.png"))
  val room1l: List[ImageSprite] = List.tabulate(4)(rm1l => new ImageSprite("WoodFloor.png"))
  val room1r: List[ImageSprite] = List.tabulate(4)(rm1r => new ImageSprite("WoodFloor.png"))
  val room2l: List[ImageSprite] = List.tabulate(4)(rm2l => new ImageSprite("WoodFloor.png"))
@@ -34,7 +34,11 @@ class lvl1 extends Game(900,800) {
  val room6t: List[ImageSprite] = List.tabulate(6)(rm6t => new ImageSprite("WoodFloor.png"))
  val room6ct: List[ImageSprite] = List.tabulate(6)(rm6ct => new ImageSprite("WoodFloor.png"))
  val room6cb: List[ImageSprite] = List.tabulate(6)(rm6cb => new ImageSprite("WoodFloor.png"))
- val room6b: List[ImageSprite] = List.tabulate(6)(rm5b => new ImageSprite("WoodFloor.png"))
+ val room6b: List[ImageSprite] = List.tabulate(6)(rm6b => new ImageSprite("WoodFloor.png"))
+ val room7t: List[ImageSprite] = List.tabulate(12)(rm7t => new ImageSprite("WoodFloor.png"))
+ val room7ct: List[ImageSprite] = List.tabulate(12)(rm7ct => new ImageSprite("WoodFloor.png"))
+ val room7cb: List[ImageSprite] = List.tabulate(12)(rm7cb => new ImageSprite("WoodFloor.png"))
+ val room7b: List[ImageSprite] = List.tabulate(12)(rm7b => new ImageSprite("WoodFloor.png"))
  val ratLst : List[ImageSprite] = List.tabulate(5)(rat => new ImageSprite("Rat.png"))
  val gobLst : List[ImageSprite] = List.tabulate(1)(gob => new ImageSprite("Goblin.png"))
  val slimeLst : List[ImageSprite] = List.tabulate(2)(slime => new ImageSprite("Slime.png"))
@@ -145,44 +149,88 @@ class lvl1 extends Game(900,800) {
        room6b(rm6b).setScale(0.025)
      addSprite(room6b(rm6b))
    }
+     for(rm7t<- room7t.indices) {
+     room7t(rm7t).setScale(0.025)
+     addSprite(room7t(rm7t))
+   }
+      for(rm7ct<- room7ct.indices) {
+     room7ct(rm7ct).setScale(0.025)
+     addSprite(room7ct(rm7ct))
+   }
+     for(rm7cb <- room7cb.indices) {
+       room7cb(rm7cb).setScale(0.025)
+     addSprite(room7cb(rm7cb))
+   }
+     for(rm7b <- room7b.indices) {
+       room7b(rm7b).setScale(0.025)
+     addSprite(room7b(rm7b))
+   }
    
    
       for(rat <- ratLst.indices) {
-   ratLst(rat).setScale(0.05)
+   ratLst(rat).setScale(0.025)
    addSprite(ratLst(rat))
       }
       for(gob <- gobLst.indices) {
-   gobLst(gob).setScale(0.05)
+   gobLst(gob).setScale(0.03)
    addSprite(gobLst(gob))
       }
        for(slime <- slimeLst.indices) {
-   slimeLst(slime).setScale(0.05)
+   slimeLst(slime).setScale(0.03)
    addSprite(slimeLst(slime))
       }
       for(door <- doorLst.indices) {
         doorLst(door).setScale(0.035)
         addSprite(doorLst(door))
+        doorLst(0).setRotationDegrees(90)
+        doorLst(7).setRotationDegrees(270)
+        doorLst(8).setRotationDegrees(270)
       }
       playerChar.setLocation(playerStartPos._1, playerStartPos._2)
       playerChar.setScale(0.035)
      addSprite(playerChar)
-   largeDoor.setScale(0.05)
-   addSprite(largeDoor)
-   door1.setScale(0.035)
-   door1.setRotationDegrees(90)
-   addSprite(door1)
+
 }
  override def advance {
+   
+   for(door <-doorLst.indices){
+   if(playerChar.intersects(doorLst(door)))
+   handleDraw
+    }
+    
+    def handleDraw {
+      if(playerChar.intersects(doorLst(0)))
+        hall2(0.05,0.725)
+      else if(playerChar.intersects(doorLst(1)))
+        room1(0.275,0.75)
+      else if(playerChar.intersects(doorLst(2)))
+          hall3(0.025,0.9)
+      else if(playerChar.intersects(doorLst(3)))
+        room2(0.475,0.75)
+      else if(playerChar.intersects(doorLst(4)))
+        room4(0.675,0.65)
+      else if(playerChar.intersects(doorLst(5)))
+        room3(0.675,0.75)
+      else if(playerChar.intersects(doorLst(6)))
+        room7(0.495,0.275)
+      else if(playerChar.intersects(doorLst(7)))
+        room5(0.325,0.47)
+      else if(playerChar.intersects(doorLst(8)))
+        room6(0.325,0.56)
+    }
    
    def hall1 (x: Double, y: Double) {
    for(h1l <- hall1l.indices) {
      var setHall1l = hall1l(h1l).setLocation(x+0.025,y-0.025*h1l)
    }
+   
    for (h1r <- hall1r.indices) {
      var setHall1r = hall1r(h1r).setLocation(x+0.05,y-0.025*h1r)
    }
-   var setDoor = {largeDoor.setLocation(0.04+x,y-0.25)
-   door1.setLocation(x+0.07,y-0.165)}
+   for(door <-doorLst.indices){
+   var Door1set = doorLst(0).setLocation(x+0.075,y-0.175)
+   
+   }
    }
    def hall2 (x:Double , y:Double) {
      
@@ -193,7 +241,7 @@ class lvl1 extends Game(900,800) {
      var setHall2r = hall2r(h2r).setLocation(x+0.025*h2r,y+0.025)
    }
    for(door <- doorLst.indices) {
-     var Door1 = doorLst(0).setLocation(x+0.2375,y-0.025)
+     
      var Door2 = doorLst(1).setLocation(x+0.2375,y+0.025)
      var Door3 = doorLst(2).setLocation(x+0.4375,y-0.025)
      var Door4 = doorLst(3).setLocation(x+0.4375,y+0.025)
@@ -245,7 +293,7 @@ class lvl1 extends Game(900,800) {
      var setRoom4r = room4r(rm4r).setLocation(x+0.025,y+0.025*rm4r)
    }
     for (slime <- slimeLst.indices) {
-      var slime1Set = slimeLst(0).setLocation(x+0.01,y-0.025)
+      var slime1Set = slimeLst(0).setLocation(x+0.01,y)
    }
    }
     def room5 (x:Double, y:Double) {
@@ -270,14 +318,26 @@ class lvl1 extends Game(900,800) {
      var setRoom6b = room6b(rm6b).setLocation(x+0.025*rm6b,y+0.075)
    }
    }
+   def room7 (x: Double, y:Double) {
+     for(rm7t <- room7t.indices) {
+     var setRoom7t = room7t(rm7t).setLocation(x-0.025*rm7t,y)
+   }
+     for(rm7ct <- room7ct.indices) {
+     var setRoom7ct = room7ct(rm7ct).setLocation(x-0.025*rm7ct,y+0.025)
+   }
+   for (rm7cb <- room7cb.indices) {
+     var setRoom7cb = room7cb(rm7cb).setLocation(x-0.025*rm7cb,y+0.05)
+   }
+   for (rm7b <- room7b.indices) {
+     var setRoom7b = room7b(rm7b).setLocation(x-0.025*rm7b,y+0.075)
+   }
+   }
    def hall3 (x:Double, y:Double) {
-    
-   for(h3l <- hall3l.indices) {
-     var setHall3l = hall3l(h3l).setLocation(0.225+x+0.025,y-0.025*h3l-0.15)
-   }
-   for (h3r <- hall3r.indices) {
-     var setHall3r = hall3r(h3r).setLocation(0.225+x+0.05,y-0.025*h3r-0.15)
-   }
+     for(door <- doorLst.indices) {
+     var Door7 = doorLst(6).setLocation(x+0.465,y-0.530)
+     var Door8 = doorLst(7).setLocation(x+0.42,y-0.425)
+     var Door9 = doorLst(8).setLocation(x+0.42,y-0.325)
+     }
     for(h3l2 <- hall3l2.indices) {
      var setHall3l2 = hall3l2(h3l2).setLocation(0.425+x+0.025,y-0.025*h3l2-0.15)
    }
@@ -285,10 +345,10 @@ class lvl1 extends Game(900,800) {
      var setHall3r2 = hall3r2(h3r2).setLocation(0.4225+x+0.05,y-0.025*h3r2-0.15)
    }
       for(h3t <- hall3t.indices) {
-     var setHall3t = hall3t(h3t).setLocation(0.275+x*h3t,0.025+y-0.5)
+     var setHall3t = hall3t(h3t).setLocation(0.325+x*h3t,0.025+y-0.5)
    }
    for (h3b <- hall3b.indices) {
-     var setHall3b = hall3b(h3b).setLocation(0.275+x*h3b,y-0.5)
+     var setHall3b = hall3b(h3b).setLocation(0.325+x*h3b,y-0.5)
    }
    var setDoors = { door2.setLocation(0.335+x,y-0.13)
    door3.setLocation(x, y)
@@ -302,8 +362,9 @@ class lvl1 extends Game(900,800) {
   room2(0.475,0.75)
   room3(0.675,0.75)
   room4(0.675,0.65)
-  room5(0.325,0.470)
+  room5(0.325,0.47)
   room6(0.325,0.56)
+  room7(0.4,0.625)
 }
 
 def moveMe {
@@ -334,7 +395,8 @@ def moveMe {
   }
  
  moveMe  
- buildPath
+ //buildPath
+ hall1(0.025,0.9) //collide with door, draw next hall/room :handleDraw
  }
  }
 
