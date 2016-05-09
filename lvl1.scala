@@ -2,9 +2,10 @@ import fang2.sprites._
 import fang2.core.Game
 import fang2.core.Sound
 import java.awt.Color
-import memes._
+
 
 class lvl1 extends Game(900,800) {
+  case class Enemy(name: String, str: Double = 4.0, spd: Double = 4.0, hp: Int = 20, armor: Int = 0)
  var playerChar = new ImageSprite("you.png")
  val largeDoor = new ImageSprite("tempDoor.png")
  val door1 = new ImageSprite("door.png")
@@ -42,12 +43,13 @@ class lvl1 extends Game(900,800) {
  val ratLst : List[ImageSprite] = List.tabulate(5)(rat => new ImageSprite("Rat.png"))
  val gobLst : List[ImageSprite] = List.tabulate(1)(gob => new ImageSprite("Goblin.png"))
  val slimeLst : List[ImageSprite] = List.tabulate(2)(slime => new ImageSprite("Slime.png"))
-
- 
+ val skelLst : List[ImageSprite] = List.tabulate(5)(skel => new ImageSprite("Skeleton.png"))
  
  
  val playerStartPos = (0.05,0.875)
  val playerSpd = 0.00625
+
+ 
 
  
  
@@ -179,6 +181,11 @@ class lvl1 extends Game(900,800) {
    slimeLst(slime).setScale(0.03)
    addSprite(slimeLst(slime))
       }
+       for(skel <- skelLst.indices) {
+   skelLst(skel).setScale(0.03)
+   addSprite(skelLst(skel))
+       }
+      
       for(door <- doorLst.indices) {
         doorLst(door).setScale(0.035)
         addSprite(doorLst(door))
@@ -229,7 +236,9 @@ class lvl1 extends Game(900,800) {
    }
    for(door <-doorLst.indices){
    var Door1set = doorLst(0).setLocation(x+0.075,y-0.175)
-   
+   }
+   for (skel <- skelLst.indices) {
+      var skel1Set = skelLst(0).setLocation(x,y+0.15)
    }
    }
    def hall2 (x:Double , y:Double) {
@@ -334,7 +343,7 @@ class lvl1 extends Game(900,800) {
    }
    def hall3 (x:Double, y:Double) {
      for(door <- doorLst.indices) {
-     var Door7 = doorLst(6).setLocation(x+0.465,y-0.530)
+     var Door7 = doorLst(6).setLocation(x+0.45,y-0.530)
      var Door8 = doorLst(7).setLocation(x+0.42,y-0.425)
      var Door9 = doorLst(8).setLocation(x+0.42,y-0.325)
      }
@@ -366,6 +375,8 @@ class lvl1 extends Game(900,800) {
   room6(0.325,0.56)
   room7(0.4,0.625)
 }
+
+
 
 def moveMe {
   
