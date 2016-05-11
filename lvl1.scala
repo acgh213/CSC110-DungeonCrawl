@@ -5,7 +5,7 @@ import java.awt.Color
 
 
 class lvl1 extends Game(900,800) {
-  case class Enemy(name: String, str: Double = 4.0, spd: Double = 4.0, hp: Int = 20, armor: Int = 0)
+case class Enemy(name: String, str: Int, spd: Int, hp: Int, armor: Int, xp: Int)
  var playerChar = new ImageSprite("you.png")
  val largeDoor = new ImageSprite("tempDoor.png")
  val door1 = new ImageSprite("door.png")
@@ -43,12 +43,33 @@ class lvl1 extends Game(900,800) {
  val ratLst : List[ImageSprite] = List.tabulate(5)(rat => new ImageSprite("Rat.png"))
  val gobLst : List[ImageSprite] = List.tabulate(1)(gob => new ImageSprite("Goblin.png"))
  val slimeLst : List[ImageSprite] = List.tabulate(2)(slime => new ImageSprite("Slime.png"))
- val skelLst : List[ImageSprite] = List.tabulate(5)(skel => new ImageSprite("Skeleton.png"))
- 
- 
+ val skelLst : List[ImageSprite] = List.tabulate(2)(skel => new ImageSprite("Skeleton.png"))
+ val enemyNames : Array[String] = Array("Skeleton","Rat","Rats","Goblin","Slime")
+ val healthBars : List[StringSprite] = List.tabulate(4)(hBar => new StringSprite("name"))
  val playerStartPos = (0.05,0.875)
  val playerSpd = 0.00625
-
+ var playerStr = 6
+ var playerSpeed = 1
+ var playerLvl = 1
+ var youHp = 20
+ var youArmor = 0
+ var curXp = 0
+ var xpNeeded = 20*(playerLvl*playerLvl)
+ var skel1 = Enemy(enemyNames(0),4,4,15,1,10)
+ var skel1dmg = 0
+ var skel1xpGiven = false
+ var rat1 = Enemy(enemyNames(1),2,8,10,0,5)
+ var rat1dmg = 0
+ var rat1xpGiven = false
+ var rat2 = Enemy(enemyNames(2),2,6,10,0,5)
+ var rat2dmg = 0
+ var rat2xpGiven = false
+ var rat3 = Enemy(enemyNames(2),4,8,10,0,5)
+ var rat3dmg = 0
+ var rat3xpGiven = false
+ var attacking = false
+ var swinging = false
+ var swingTime = 0
  
 
  
@@ -168,7 +189,10 @@ class lvl1 extends Game(900,800) {
      addSprite(room7b(rm7b))
    }
    
-   
+   for(hBar <- healthBars.indices) {
+     healthBars(hBar).setScale(0.035)
+     healthBars(hBar).setColor(Color.GREEN)
+ }
       for(rat <- ratLst.indices) {
    ratLst(rat).setScale(0.025)
    addSprite(ratLst(rat))
@@ -181,10 +205,10 @@ class lvl1 extends Game(900,800) {
    slimeLst(slime).setScale(0.03)
    addSprite(slimeLst(slime))
       }
-       for(skel <- skelLst.indices) {
+      for(skel <- skelLst.indices) {
    skelLst(skel).setScale(0.03)
-   addSprite(skelLst(skel))
-       }
+   
+      }
       
       for(door <- doorLst.indices) {
         doorLst(door).setScale(0.035)
@@ -192,7 +216,11 @@ class lvl1 extends Game(900,800) {
         doorLst(0).setRotationDegrees(90)
         doorLst(7).setRotationDegrees(270)
         doorLst(8).setRotationDegrees(270)
+        doorLst(1).setRotationDegrees(180)
+        doorLst(3).setRotationDegrees(180)
+        doorLst(5).setRotationDegrees(180)
       }
+      
       playerChar.setLocation(playerStartPos._1, playerStartPos._2)
       playerChar.setScale(0.035)
      addSprite(playerChar)
@@ -237,10 +265,25 @@ class lvl1 extends Game(900,800) {
    for(door <-doorLst.indices){
    var Door1set = doorLst(0).setLocation(x+0.075,y-0.175)
    }
-   for (skel <- skelLst.indices) {
-      var skel1Set = skelLst(0).setLocation(x,y+0.15)
+   for(hBar <- healthBars.indices) {
+     addSprite(healthBars(0))
+     val hBar1Set = healthBars(0).setLocation(x+0.05,y-0.25)
+     healthBars(0).setText(enemyNames(0))
+     if (skel1.hp <= 0)
+      healthBars(0).setLocation(-1,-1)
+     }
+   if(skel1xpGiven == false)
+   for(skel <- skelLst) {
+     addSprite(skelLst(0))
+     val skel1Set = skelLst(0).setLocation(x+0.05,y-0.225)
+     if ((playerChar.intersects(skelLst(0)))&&(swinging == false))
+       attackSkel1
    }
-   }
+ }
+   
+     
+   
+   
    def hall2 (x:Double , y:Double) {
      
      for(h2l <- hall2l.indices) {
@@ -251,11 +294,11 @@ class lvl1 extends Game(900,800) {
    }
    for(door <- doorLst.indices) {
      
-     var Door2 = doorLst(1).setLocation(x+0.2375,y+0.025)
+     var Door2 = doorLst(1).setLocation(x+0.2375,y+0.055)
      var Door3 = doorLst(2).setLocation(x+0.4375,y-0.025)
-     var Door4 = doorLst(3).setLocation(x+0.4375,y+0.025)
+     var Door4 = doorLst(3).setLocation(x+0.4375,y+0.055)
      var Door5 = doorLst(4).setLocation(x+0.6375,y-0.025)
-     var Door6 = doorLst(5).setLocation(x+0.6375,y+0.025)
+     var Door6 = doorLst(5).setLocation(x+0.6375,y+0.055)
    }
    }
    def room1 (x:Double, y:Double) {
@@ -265,9 +308,18 @@ class lvl1 extends Game(900,800) {
    for (rm1r <- room1r.indices) {
      var setRoom1r = room1r(rm1r).setLocation(x+0.025,y+0.025*rm1r)
    }
+    for(hBar <- healthBars.indices) {
+     addSprite(healthBars(1))
+     val hBar1Set = healthBars(1).setLocation(x+0.01,y+0.075)
+     healthBars(1).setText(enemyNames(1))
+   }
+   if(rat1xpGiven == false){
    for (rat <- ratLst.indices) {
       var rat1Set = ratLst(0).setLocation(x+0.01,y+0.05)
+      if (playerChar.intersects(ratLst(0)))
+       attackRat1 
 }
+   }
    }
     def room2 (x:Double, y:Double) {
      for(rm2l <- room2l.indices) {
@@ -276,12 +328,30 @@ class lvl1 extends Game(900,800) {
    for (rm2r <- room2r.indices) {
      var setRoom2r = room2r(rm2r).setLocation(x+0.025,y+0.025*rm2r)
    }
+    for(hBar <- healthBars.indices) {
+     addSprite(healthBars(2))
+     val hBar2Set = healthBars(2).setLocation(x-0.005,y+0.115)
+     healthBars(2).setText(enemyNames(2))
+     addSprite(healthBars(3))
+     val hBar3Set = healthBars(3).setLocation(x+0.02,y+0.115)
+     healthBars(3).setText(enemyNames(2))
+     
+
+   }
+   if(rat2xpGiven == false){
    for (rat <- ratLst.indices) {
       var rat2Set = ratLst(1).setLocation(x+0.01,y+0.05)
+      if (playerChar.intersects(ratLst(1)))
+       attackRat2 
    }
+    }
+    if(rat3xpGiven == false){   
       for (rat <- ratLst.indices) {
-      var rat3Set = ratLst(2).setLocation(x+0.02,y+0.025)
-   }
+      var rat3Set = ratLst(2).setLocation(x+0.02,y+0.075)
+      if (playerChar.intersects(ratLst(2)))
+       attackRat3
+    }
+    }
     }
     def room3 (x:Double, y:Double) {
      for(rm3l <- room3l.indices) {
@@ -375,25 +445,184 @@ class lvl1 extends Game(900,800) {
   room6(0.325,0.56)
   room7(0.4,0.625)
 }
+def attackSkel1 {
+  
+  if (swinging == false && playerChar.intersects(skelLst(0))){
+    doDmg
+    changeColor
+  }
+}
+    def changeColor {
+    for(hBars <- healthBars.indices) 
+     if (skel1dmg >= 5 && skel1dmg < 10){
+    healthBars(0).setColor(Color.YELLOW)}
+       else if (skel1dmg < 15 && skel1dmg >= 10){
+      healthBars(0).setColor(Color.RED)}
+      else if (skel1dmg >= 15){
+      healthBars(0).setColor(Color.WHITE)
+      getXp
+      }
+      }
+    def doDmg {
+    var dmg = ((playerStr*playerSpeed)-(skel1.armor))
+    skel1dmg = skel1dmg + dmg
+    println("Attacking " + enemyNames(0) + ". You dealt " + dmg + " damage")
+    var returndmg = (youHp-(skel1.str*skel1.spd)-(youArmor)).toInt
+    println("Ouch! You got hit for " + returndmg + " damage.")
+    swingTime += 6
+    swing
+    }
+    def getXp {
+    for(hBars <- healthBars.indices) {
+     if (skel1dmg >= skel1.hp && skel1xpGiven == false){
+      println("You got " + skel1.xp + " experience for fighting.")
+      curXp = curXp + skel1.xp
+      println(xpNeeded-curXp + " xp needed for next level up.")
+      skel1xpGiven = true
+    }
+    }
+    for(skel <-skelLst) {
+      skelLst(0).setLocation(-1,-1)}
+    }
+    
+  def attackRat1 {
+  if (swinging == false && playerChar.intersects(ratLst(0))){
+    Rat1doDmg
+    swingTime = 6
+    changeRat1Color
+  }
+}
+    def changeRat1Color {
+    for(hBars <- healthBars.indices) 
+     if (rat1dmg >= 2 && rat1dmg < 5){
+    healthBars(1).setColor(Color.YELLOW)}
+       else if (rat1dmg < 10 && rat1dmg >= 5){
+      healthBars(1).setColor(Color.RED)}
+      else if (rat1dmg >= 10){
+      healthBars(1).setColor(Color.WHITE)
+      rat1getXp
+      }
+      }
+    def Rat1doDmg {
+    var dmg = ((playerStr*playerSpeed)-(rat1.armor))
+    rat1dmg = rat1dmg + dmg
+    println("Attacking " + enemyNames(1) + ". You dealt " + dmg + " damage")
+    var returndmg = (youHp-(rat1.str*rat1.spd)-(youArmor)).toInt
+    println("Ouch! You got hit for " + returndmg + " damage.")
+    }
+    def rat1getXp {
+    for(hBars <- healthBars.indices) {
+     if (rat1dmg >= rat1.hp && rat1xpGiven == false){
+      rat1xpGiven = true
+      println("You got " + rat1.xp + " experience for fighting.")
+      curXp = curXp + rat1.xp
+      println(xpNeeded-curXp + " xp needed for next level up.")
+    }
+    }
+    for(rat <-ratLst) {
+      ratLst(0).setLocation(-1,-1)}
+    }  
+      def attackRat2 {
+  if (swinging == false && playerChar.intersects(ratLst(1))){
+    Rat2doDmg
+    swingTime = 6
+    changeRat2Color
+  }
+}
+    def changeRat2Color {
+    for(hBars <- healthBars.indices) 
+     if (rat2dmg >= 2 && rat2dmg < 5){
+    healthBars(2).setColor(Color.YELLOW)}
+       else if (rat2dmg < 10 && rat2dmg >= 5){
+      healthBars(2).setColor(Color.RED)}
+      else if (rat2dmg >= 10){
+      healthBars(2).setColor(Color.WHITE)
+      rat2getXp
+      }
+      }
+    def Rat2doDmg {
+    var dmg = ((playerStr*playerSpeed)-(rat2.armor))
+    rat2dmg = rat2dmg + dmg
+    println("Attacking " + enemyNames(1) + ". You dealt " + dmg + " damage")
+    var returndmg = (youHp-(rat2.str*rat2.spd)-(youArmor)).toInt
+    println("Ouch! You got hit for " + returndmg + " damage.")
+    }
+    def rat2getXp {
+    for(hBars <- healthBars.indices) {
+     if (rat2dmg >= rat2.hp && rat2xpGiven == false){
+      rat2xpGiven = true
+      println("You got " + rat2.xp + " experience for fighting.")
+      curXp = curXp + rat2.xp
+      println(xpNeeded-curXp + " xp needed for next level up.")
+    }
+    }
+    for(rat <-ratLst) {
+      ratLst(1).setLocation(-1,-1)}
+    }    
+     def attackRat3 {
+  if (swinging == false && playerChar.intersects(ratLst(2))){
+    Rat3doDmg
+    swingTime = 6
+    changeRat3Color
+  }
+}
+    def changeRat3Color {
+    for(hBars <- healthBars.indices) 
+     if (rat3dmg >= 2 && rat3dmg < 5){
+    healthBars(3).setColor(Color.YELLOW)}
+       else if (rat3dmg < 10 && rat3dmg >= 5){
+      healthBars(3).setColor(Color.RED)}
+      else if (rat3dmg >= 10){
+      healthBars(3).setColor(Color.WHITE)
+      rat3getXp
+      }
+      }
+    def Rat3doDmg {
+    var dmg = ((playerStr*playerSpeed)-(rat3.armor))
+    rat3dmg = rat3dmg + dmg
+    println("Attacking " + enemyNames(1) + ". You dealt " + dmg + " damage")
+    var returndmg = (youHp-(rat3.str*rat3.spd)-(youArmor)).toInt
+    println("Ouch! You got hit for " + returndmg + " damage.")
+    }
+    def rat3getXp {
+     if (rat3dmg >= rat3.hp && rat3xpGiven == false){
+      rat3xpGiven = true
+      println("You got " + rat3.xp + " experience for fighting.")
+      curXp = curXp + rat3.xp
+      println(xpNeeded-curXp + " xp needed for next level up.")
+    }
+    for(rat <-ratLst) {
+      ratLst(2).setLocation(-1,-1)}
+    }
 
+def swing {
+  if(swingTime > 0){
+  swinging = true
+  }
+  if(swingTime <= 0){
+  swinging = false}
+ }
+
+ 
 
 
 def moveMe {
-  
   if (leftPressed) {
     playerChar.translateX(-playerSpd)
-    
+    swingTime -= 1
   }
    else if (upPressed) {
     playerChar.translateY(-playerSpd)
-   
+    swingTime -= 1
    }
    else if (rightPressed)  {
     playerChar.translateX(playerSpd)
+    swingTime -= 1
    
    }
    else if (downPressed) {
     playerChar.translateY(playerSpd)
+    swingTime -= 1
    
 }
   else if (keyPressed) {
@@ -404,11 +633,10 @@ def moveMe {
 }}
 
   }
- 
  moveMe  
  //buildPath
  hall1(0.025,0.9) //collide with door, draw next hall/room :handleDraw
  }
- }
+}
 
 
